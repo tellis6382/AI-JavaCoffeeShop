@@ -98,7 +98,7 @@ public class ProductController {
 
         writer.write(head);
 
-        writer.write("<div class=\"panel-heading\"><h1>" + productName + "</h1></div>");
+        writer.write("<div class=\"panel-heading\"><h1>" + HtmlUtils.htmlEscape(productName) + "</h1></div>");
 
         String output = "<div class=\"panel-body\">" +
                 "<ul>" +
@@ -108,7 +108,10 @@ public class ProductController {
                 "</ul>" +
                 "</div>";
 
-        writer.write(String.format(output, desc, productType, price));
+        writer.write(String.format(output,
+                HtmlUtils.htmlEscape(desc == null ? "" : desc),
+                HtmlUtils.htmlEscape(productType == null ? "" : productType.toString()),
+                HtmlUtils.htmlEscape(String.valueOf(price))));
         writer.write(foot);
 
 
