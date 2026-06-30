@@ -40,8 +40,8 @@ public class SecurityConfig {
                         logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                                 .permitAll()
                 )
-                .csrf().disable().headers().frameOptions().disable()
-                .and().requestCache().disable();
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .requestCache().disable();
 
         return http.build();
     }

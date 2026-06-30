@@ -3,6 +3,7 @@ package org.workshop.coffee.controller;
 import org.workshop.coffee.domain.Person;
 import org.workshop.coffee.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,15 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @Controller
 @RequestMapping("/persons")
 public class PersonController {
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private final PersonService personService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public PersonController(PersonService personService) {
+    public PersonController(PersonService personService, PasswordEncoder passwordEncoder) {
         this.personService = personService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
@@ -52,7 +59,10 @@ public class PersonController {
         boolean isAdd = person.getId() == null;
 
         if (isAdd) {
-            person.setPassword("123123");
+            byte[] tempBytes = new byte[24];
+            SECURE_RANDOM.nextBytes(tempBytes);
+            String tempPassword = Base64.getUrlEncoder().withoutPadding().encodeToString(tempBytes);
+            person.setPassword(passwordEncoder.encode(tempPassword));
         }
 
         personService.savePerson(person);
